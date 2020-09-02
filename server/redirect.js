@@ -1,12 +1,4 @@
-const express = require('express');
-const DB = require('better-sqlite3');
-const config = require('./config');
-
-const app = express();
-const db = new DB(config.db);
-
-app.set('views', __dirname);
-app.set('view engine', 'pug');
+const {app, config, db} = require('.');
 
 try {
 	db.exec('SELECT EXISTS(SELECT 1 FROM links)');
@@ -26,19 +18,13 @@ const getLink = db.prepare(`
 `);
 getLink.pluck();
 
-app.get('/', (req, res) => {
+app.get('/', (req, res, next) => {
 	const matched = config.linkregex.exec(req.hostname);
-	if(!matched) return res.status(400).render('error', {
-		msg: 'Invalid url'
-	});
+	if(!matched) return next();
 	const [, match] = matched;
 	const link = getLink.get(match);
 	if(!link) return res.status(404).render('error', {
 		msg: 'No link for this url'
 	});
 	res.redirect(link);
-});
-
-app.listen(config.port, () => {
-	console.log('App ready');
 });

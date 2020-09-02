@@ -1,0 +1,17 @@
+input[type=text], input[type=password] {
+	background: @accentbg;
+	color: @fg;
+	padding: .1rem;
+	display: inline-block;
+	border: 0;
+	border-radius: .2rem;
+}
+
+label {
+	font-size: 1.4rem;
+
+	&::after {
+		color: @accent;
+		content: ': '
+	}
+}
